@@ -1,16 +1,18 @@
 var Rx = require('rx'),
-    Observable = Rx.Observable,
-    Subject = Rx.Subject,
-    Scheduler = Rx.Scheduler;
+  Observable = Rx.Observable,
+  Subject = Rx.Subject,
+  Scheduler = Rx.Scheduler;
 
 QUnit.module('Time');
 
 var __ = 'Fill in the blank';
 
+// https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/schedulers/scheduler.md
+
 asyncTest('launching an event via a scheduler', function () {
   var state = null;
   var received = '';
-  var delay = 600; // Fix this value
+  var delay = 40; // Fix this value
   Scheduler.default.scheduleFuture(state, delay, function (scheduler, state) {
     received = 'Finished';
   });
@@ -18,84 +20,93 @@ asyncTest('launching an event via a scheduler', function () {
   setTimeout(function () {
     start();
     equal('Finished', received);
-  }, 500);
+  }, 50);
 });
 
 asyncTest('launching an event in the future', function () {
   var received = null;
-  var time = __;
+  var time = 100;
 
   var people = new Subject();
-  people.delay(time).subscribe(function (x) { received = x; });
+  people.delay(time)
+    .subscribe(function (x) { received = x; });
+
   people.onNext('Godot');
+
+  equal(null, received);
 
   setTimeout(function () {
     equal('Godot', received);
     start();
-  }, 500)
+  }, 200)
 });
 
 asyncTest('a watched pot', function () {
   var received = '';
-  var delay = 500;
-  var timeout = __;
+  var delay = 50;
+  var timeout = 100;
   var timeoutEvent = Observable.just('Tepid');
 
   Observable
     .just('Boiling')
     .delay(delay)
     .timeout(timeout, timeoutEvent)
-    .subscribe(function(x) { received = x; });
+    .subscribe(function (x) { received = x; });
 
-  setTimeout(function() {
+  setTimeout(function () {
     equal(received, 'Boiling');
     start();
-  }, 500);
+  }, 50);
 });
 
 asyncTest('you can place a time limit on how long an event should take', function () {
   var received = [];
-  var timeout = 2000;
+  var timeout = 20;
   var timeoutEvent = Observable.just('Tepid');
   var temperatures = new Subject();
 
-  temperatures.timeout(timeout, timeoutEvent).subscribe(received.push.bind(received));
+  temperatures.timeout(timeout, timeoutEvent)
+    .subscribe(received.push.bind(received));
 
   temperatures.onNext('Started');
 
   setTimeout(function () {
     temperatures.onNext('Boiling');
-  }, 3000);
+  }, 30);
 
   setTimeout(function () {
-    equal(__, received.join(', '));
+    equal('Started, Tepid', received.join(', '));
     start();
-  }, 4000);
+  }, 40);
 });
 
 asyncTest('debouncing', function () {
-  expect(1);
+  expect(3);
 
   var received = [];
   var events = new Subject();
-  events.debounce(100).subscribe(received.push.bind(received));
+
+  events.debounce(10)
+    .subscribe(received.push.bind(received));
 
   events.onNext('f');
   events.onNext('fr');
   events.onNext('fro');
   events.onNext('from');
+  equal('', received.join(' '));
 
   setTimeout(function () {
     events.onNext('r');
     events.onNext('rx');
     events.onNext('rxj');
     events.onNext('rxjs');
+    equal('from', received.join(' '));
 
     setTimeout(function () {
-      equal(__, received.join(' '));
+      equal('from rxjs', received.join(' '));
       start();
-    }, 120);
-  }, 120);
+    }, 15);
+  }, 15);
 });
 
 asyncTest('buffering', function () {
@@ -109,6 +120,7 @@ asyncTest('buffering', function () {
   events.onNext('x');
   events.onNext('J');
   events.onNext('S');
+  equal('', received.join(' '));
 
   setTimeout(function () {
     events.onNext('R');
@@ -116,9 +128,10 @@ asyncTest('buffering', function () {
     events.onNext('c');
     events.onNext('k');
     events.onNext('s');
+    equal('RxJS', received.join(' '));
 
     setTimeout(function () {
-      equal(__, received.join(' '));
+      equal('RxJS Rocks', received.join(' '));
       start();
     }, 120);
   }, 120);
@@ -130,6 +143,7 @@ asyncTest('time between calls', function () {
 
   events.timeInterval()
     .filter(function (t) { return t.interval > 100; })
+    .do((t) => console.log('time between calls:', t))
     .subscribe(function (t) { received.push(t.value); });
 
   events.onNext('too');
@@ -141,7 +155,7 @@ asyncTest('time between calls', function () {
     setTimeout(function () {
       events.onNext('down');
 
-      equal(__, received.join(' '));
+      equal('slow down', received.join(' '));
       start();
     }, 120);
   }, 120);
@@ -149,13 +163,15 @@ asyncTest('time between calls', function () {
 
 asyncTest('results can be ambiguous timing', function () {
   var results = 0;
-  var fst = Observable.timer(400).map(-1);
-  var snd = Observable.timer(500).map(1);
+  var fst = Observable.timer(40).map(-1);
+  var snd = Observable.timer(100).map(1);
 
-  fst.amb(snd).subscribe(function (x) { results = x; });
+  // https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/operators/amb.md
+  fst.amb(snd)
+    .subscribe(function (x) { results = x; });
 
   setTimeout(function () {
-    equal(results, __);
+    equal(results, -1);
     start();
   }, 600);
 });
