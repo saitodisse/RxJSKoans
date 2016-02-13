@@ -56,7 +56,7 @@ asyncTest('a watched pot', function () {
   setTimeout(function () {
     equal(received, 'Boiling');
     start();
-  }, 50);
+  }, 70);
 });
 
 asyncTest('you can place a time limit on how long an event should take', function () {
