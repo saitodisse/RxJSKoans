@@ -1,5 +1,5 @@
 var Rx = require('rx'),
-    Observable = Rx.Observable;
+  Observable = Rx.Observable;
 
 QUnit.module('Mapping');
 
@@ -20,7 +20,7 @@ test('flatMapLatest only gets us the latest value', function () {
   var results = [];
   Observable.range(1, 3)
     .flatMapLatest(function (x) {
-      return Observable.range(x, ___);
+      return Observable.range(x, __);
     })
     .subscribe(results.push.bind(results));
 

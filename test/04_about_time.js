@@ -1,7 +1,7 @@
 var Rx = require('rx'),
-    Observable = Rx.Observable,
-    Subject = Rx.Subject,
-    Scheduler = Rx.Scheduler;
+  Observable = Rx.Observable,
+  Subject = Rx.Subject,
+  Scheduler = Rx.Scheduler;
 
 QUnit.module('Time');
 
@@ -45,9 +45,9 @@ asyncTest('a watched pot', function () {
     .just('Boiling')
     .delay(delay)
     .timeout(timeout, timeoutEvent)
-    .subscribe(function(x) { received = x; });
+    .subscribe(function (x) { received = x; });
 
-  setTimeout(function() {
+  setTimeout(function () {
     equal(received, 'Boiling');
     start();
   }, 500);
@@ -59,7 +59,9 @@ asyncTest('you can place a time limit on how long an event should take', functio
   var timeoutEvent = Observable.just('Tepid');
   var temperatures = new Subject();
 
-  temperatures.timeout(timeout, timeoutEvent).subscribe(received.push.bind(received));
+  temperatures
+    .timeout(timeout, timeoutEvent)
+    .subscribe(received.push.bind(received));
 
   temperatures.onNext('Started');
 
@@ -78,7 +80,8 @@ asyncTest('debouncing', function () {
 
   var received = [];
   var events = new Subject();
-  events.debounce(100).subscribe(received.push.bind(received));
+  events.debounce(100)
+    .subscribe(received.push.bind(received));
 
   events.onNext('f');
   events.onNext('fr');
@@ -152,7 +155,8 @@ asyncTest('results can be ambiguous timing', function () {
   var fst = Observable.timer(400).map(-1);
   var snd = Observable.timer(500).map(1);
 
-  fst.amb(snd).subscribe(function (x) { results = x; });
+  fst.amb(snd)
+    .subscribe(function (x) { results = x; });
 
   setTimeout(function () {
     equal(results, __);

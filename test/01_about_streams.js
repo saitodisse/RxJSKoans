@@ -1,35 +1,40 @@
 var Rx = require('rx'),
-    Observable = Rx.Observable,
-    Subject = Rx.Subject,
-    Range = require('../util/range');
+  Observable = Rx.Observable,
+  Subject = Rx.Subject,
+  Range = require('../util/range');
 
 QUnit.module('Observable Streams');
 
 var __ = 'Fill in the blank';
 
 test('simple subscription', function () {
-  Observable.just(42).subscribe(function (x) { equal(x, __); });
+  Observable.just(42)
+    .subscribe(function (x) { equal(x, __); });
 });
 
 test('what comes in goes out', function () {
-  Observable.just(__).subscribe(function (x) { equal(x, 101); });
+  Observable.just(__)
+    .subscribe(function (x) { equal(x, 101); });
 });
 
 // Which interface Rx apply? (hint: what does "just()" return)
 test('this is the same as an event stream', function () {
   var events = new Subject();
-  events.subscribe(function (x) { equal(__, x); });
+  events
+    .subscribe(function (x) { equal(__, x); });
   events.onNext(37);
 });
 
 // What is the relationship between "this is the same as an event stream" and "simple subscription"?
 test('how event streams relate to observables', function () {
   var observableResult = 1;
-  Observable.just(73).subscribe(function (x) { observableResult = x; });
+  Observable.just(73)
+    .subscribe(function (x) { observableResult = x; });
 
   var eventStreamResult = 1;
   var events = new Subject();
-  events.subscribe(function (x) { eventStreamResult = x; });
+  events
+    .subscribe(function (x) { eventStreamResult = x; });
   events.__(73);
 
   equal(observableResult, eventStreamResult);
@@ -39,7 +44,8 @@ test('how event streams relate to observables', function () {
 test('event streams have multiple results', function () {
   var eventStreamResult = 0;
   var events = new Subject();
-  events.subscribe(function (x) { eventStreamResult += x; });
+  events
+    .subscribe(function (x) { eventStreamResult += x; });
 
   events.onNext(10);
   events.onNext(7);
@@ -50,7 +56,8 @@ test('event streams have multiple results', function () {
 // What does Observable.just() map to for a Subject?
 test('simple return', function () {
   var received = '';
-  Observable.just('foo').subscribe(function (x) { received = x; });
+  Observable.just('foo')
+    .subscribe(function (x) { received = x; });
 
   equal(__, received);
 });
@@ -58,7 +65,8 @@ test('simple return', function () {
 test('the last event', function () {
   var received = '';
   var names = ['foo', 'bar'];
-  Observable.fromArray(names).subscribe(function (x) { received = x; });
+  Observable.fromArray(names)
+    .subscribe(function (x) { received = x; });
 
   equal(__, received);
 });
@@ -66,7 +74,8 @@ test('the last event', function () {
 test('everything counts', function () {
   var received = 0;
   var numbers = [3, 4];
-  Observable.fromArray(numbers).subscribe(function (x) { received += x; });
+  Observable.fromArray(numbers)
+    .subscribe(function (x) { received += x; });
 
   equal(__, received);
 });
@@ -74,7 +83,8 @@ test('everything counts', function () {
 test('this is still an event stream', function () {
   var received = 0;
   var numbers = new Subject();
-  numbers.subscribe(function (x) { received += x; });
+  numbers
+    .subscribe(function (x) { received += x; });
 
   numbers.onNext(10);
   numbers.onNext(5);
@@ -86,7 +96,8 @@ test('all events will be received', function () {
   var received = 'Working ';
   var numbers = Range.create(9, 5);
 
-  Observable.fromArray(numbers).subscribe(function (x) { received += x; });
+  Observable.fromArray(numbers)
+    .subscribe(function (x) { received += x; });
 
   equal(__, received);
 });
@@ -95,15 +106,16 @@ test('do things in the middle', function () {
   var status = [];
   var daysTilTest = Observable.fromArray(Range.create(4, 1));
 
-  daysTilTest.do(function (d) { status.push(d + '=' + (d === 1 ? 'Study Like Mad' : __)); }).subscribe();
+  daysTilTest.do(function (d) { status.push(d + '=' + (d === 1 ? 'Study Like Mad' : __)); })
+    .subscribe();
 
   equal('4=Party,3=Party,2=Party,1=Study Like Mad', status.toString());
 });
 
 test('nothing listens until you subscribe', function () {
   var sum = 0,
-      numbers = Observable.fromArray(Range.create(1, 10)),
-      observable = numbers.do(function (n) { sum += n; });
+    numbers = Observable.fromArray(Range.create(1, 10)),
+    observable = numbers.do(function (n) { sum += n; });
 
   equal(0, sum);
   observable.__();
@@ -113,13 +125,14 @@ test('nothing listens until you subscribe', function () {
 
 test('events before you subscribe do not count', function () {
   var sum = 0,
-      numbers = new Subject(),
-      observable = numbers.do(function (n) { sum += n; });
+    numbers = new Subject(),
+    observable = numbers.do(function (n) { sum += n; });
 
   numbers.onNext(1);
   numbers.onNext(2);
 
-  observable.subscribe();
+  observable
+    .subscribe();
 
   numbers.onNext(3);
   numbers.onNext(4);
@@ -129,9 +142,10 @@ test('events before you subscribe do not count', function () {
 
 test('events after you unsubscribe dont count', function () {
   var sum = 0,
-      numbers = new Subject(),
-      observable = numbers.do(function (n) { sum += n; }),
-      subscription = observable.subscribe();
+    numbers = new Subject(),
+    observable = numbers.do(function (n) { sum += n; }),
+    subscription = observable
+      .subscribe();
 
   numbers.onNext(1);
   numbers.onNext(2);
@@ -146,13 +160,14 @@ test('events after you unsubscribe dont count', function () {
 
 test('events while subscribing', function () {
   var received = [],
-      words = new Subject(),
-      observable = words.do(received.push.bind(received));
+    words = new Subject(),
+    observable = words.do(received.push.bind(received));
 
   words.onNext('Peter');
   words.onNext('said');
 
-  var subscription = observable.subscribe();
+  var subscription = observable
+    .subscribe();
 
   words.onNext('you');
   words.onNext('look');

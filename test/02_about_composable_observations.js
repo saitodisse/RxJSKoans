@@ -1,7 +1,7 @@
 var Rx = require('rx'),
-    Observable = Rx.Observable,
-    Subject = Rx.Subject,
-    Range = require('../util/range');
+  Observable = Rx.Observable,
+  Subject = Rx.Subject,
+  Range = require('../util/range');
 
 QUnit.module('Composable Observations');
 
@@ -9,17 +9,18 @@ var __ = 'Fill in the blank';
 
 test('composable add', function () {
   var received = 0,
-      numbers = [10, 100, __];
+    numbers = [10, 100, __];
 
-  Observable.fromArray(numbers).sum().subscribe(function (x) { received = x; });
+  Observable.fromArray(numbers).sum()
+    .subscribe(function (x) { received = x; });
 
   equal(1110, received);
 });
 
 test('composable before and after', function () {
   var names = Range.create(1, 6),
-      a = '',
-      b = '';
+    a = '',
+    b = '';
 
   Observable.fromArray(names)
     .do(function (n) { a += n; })
@@ -33,7 +34,7 @@ test('composable before and after', function () {
 
 test('we wrote this', function () {
   var received = [],
-      names = ["Bart", "Marge", "Wes", "Linus", "Erik", "Matt"];
+    names = ["Bart", "Marge", "Wes", "Linus", "Erik", "Matt"];
 
   Observable.fromArray(names)
     .filter(function (n) { return n.length <= __; })
@@ -44,7 +45,7 @@ test('we wrote this', function () {
 
 test('converting events', function () {
   var received = '',
-      names = ["wE", "hOpE", "yOU", "aRe", "eNJoyIng", "tHiS"];
+    names = ["wE", "hOpE", "yOU", "aRe", "eNJoyIng", "tHiS"];
 
   Observable.fromArray(names)
     .map(function (x) { return x.__(); })
@@ -55,17 +56,18 @@ test('converting events', function () {
 
 test('create a more relevant stream', function () {
   var received = '',
-      mouseXMovements = [100, 200, 150],
-      relativemouse = Observable.fromArray(mouseXMovements).map(function (x) { return x - __; });
+    mouseXMovements = [100, 200, 150],
+    relativemouse = Observable.fromArray(mouseXMovements).map(function (x) { return x - __; });
 
-  relativemouse.subscribe(function (x) { received += x + ', '; });
+  relativemouse
+    .subscribe(function (x) { received += x + ', '; });
 
   equal('50, 150, 100, ', received);
 });
 
 test('checking everything', function () {
   var received = null,
-      names = [2,4,6,8];
+    names = [2, 4, 6, 8];
 
   Observable.fromArray(names)
     .every(function (x) { return x % 2 === 0; })
@@ -76,7 +78,7 @@ test('checking everything', function () {
 
 test('composition means the sum is greater than the parts', function () {
   var received = 0,
-      numbers = Observable.range(1, 10);
+    numbers = Observable.range(1, 10);
 
   numbers.filter(function (x) { return x > __; })
     .sum()

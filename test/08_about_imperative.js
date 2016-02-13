@@ -1,5 +1,5 @@
 var Rx = require('rx'),
-    Observable = Rx.Observable;
+  Observable = Rx.Observable;
 
 QUnit.module('Imperative');
 
@@ -12,7 +12,7 @@ test('can make a decision with an if with no else', function () {
       return Rx.Observable.if(
         function () { return x % 2 === 0; },
         Observable.just(x)
-      );
+        );
     })
     .subscribe(results.push.bind(results));
 
@@ -27,7 +27,7 @@ test('can make a decision with an if with an else', function () {
         function () { return x % 2 === 0; },
         Observable.just(x),
         Observable.range(x, i)
-      );
+        );
     })
     .subscribe(results.push.bind(results));
 
@@ -49,7 +49,7 @@ test('we can make test cases', function () {
       return Observable.case(
         function () { return x; },
         cases
-      );
+        );
     })
     .subscribe(function (x) { result = x; });
 
@@ -72,7 +72,7 @@ test('we can also have a default case', function () {
         function () { return x; },
         cases,
         Observable.just(__)
-      );
+        );
     })
     .subscribe(function (x) { result = x; });
 
@@ -87,7 +87,7 @@ test('while does something until proven false', function () {
     .while(
       function () { return ++i < 3 },
       Rx.Observable.just(__)
-    )
+      )
     .subscribe(result.push.bind(result));
 
   equal('4242', result.join(''));

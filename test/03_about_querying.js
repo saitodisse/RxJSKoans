@@ -1,6 +1,6 @@
 var Rx = require('rx'),
-    Observable = Rx.Observable,
-    EventEmitter = require('events').EventEmitter;
+  Observable = Rx.Observable,
+  EventEmitter = require('events').EventEmitter;
 
 QUnit.module('Querying');
 
@@ -28,9 +28,9 @@ test('querying over events', function () {
     .map(function (click) { return __ + __; })
     .subscribe(function (x) { results = x; });
 
-  e.emit('click', {x: 100, y: 50});
-  e.emit('click', {x: 75,  y: 75});
-  e.emit('click', {x: 40,  y: 80});
+  e.emit('click', { x: 100, y: 50 });
+  e.emit('click', { x: 75, y: 75 });
+  e.emit('click', { x: 40, y: 80 });
 
   equal(results, 150);
 });
@@ -41,6 +41,6 @@ test('buffering with count and skip', function () {
     .bufferWithCount(__, __)
     .subscribe(results.push.bind(results));
 
-  equal('12345',  results[0].join(''));
+  equal('12345', results[0].join(''));
   equal('678910', results[1].join(''));
 });
