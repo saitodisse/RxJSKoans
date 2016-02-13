@@ -11,7 +11,7 @@ test('composable add', function () {
   var received = 0,
       numbers = [10, 100, __];
 
-  Observable.from(numbers).sum().subscribe(function (x) { received = x; });
+  Observable.fromArray(numbers).sum().subscribe(function (x) { received = x; });
 
   equal(1110, received);
 });
@@ -21,10 +21,10 @@ test('composable before and after', function () {
       a = '',
       b = '';
 
-  Observable.from(names)
-    .tap(function (n) { a += n; })
+  Observable.fromArray(names)
+    .do(function (n) { a += n; })
     .filter(function (n) { return n % 2 === 0; })
-    .tap(function (n) { b += n; })
+    .do(function (n) { b += n; })
     .subscribe();
 
   equal(__, a);
@@ -35,7 +35,7 @@ test('we wrote this', function () {
   var received = [],
       names = ["Bart", "Marge", "Wes", "Linus", "Erik", "Matt"];
 
-  Observable.from(names)
+  Observable.fromArray(names)
     .filter(function (n) { return n.length <= __; })
     .subscribe(received.push.bind(received));
 
@@ -46,7 +46,7 @@ test('converting events', function () {
   var received = '',
       names = ["wE", "hOpE", "yOU", "aRe", "eNJoyIng", "tHiS"];
 
-  Observable.from(names)
+  Observable.fromArray(names)
     .map(function (x) { return x.__(); })
     .subscribe(function (x) { received += x + ' '; });
 
@@ -56,7 +56,7 @@ test('converting events', function () {
 test('create a more relevant stream', function () {
   var received = '',
       mouseXMovements = [100, 200, 150],
-      relativemouse = Observable.from(mouseXMovements).map(function (x) { return x - __; });
+      relativemouse = Observable.fromArray(mouseXMovements).map(function (x) { return x - __; });
 
   relativemouse.subscribe(function (x) { received += x + ', '; });
 
@@ -67,7 +67,7 @@ test('checking everything', function () {
   var received = null,
       names = [2,4,6,8];
 
-  Observable.from(names)
+  Observable.fromArray(names)
     .every(function (x) { return x % 2 === 0; })
     .subscribe(function (x) { received = x; });
 

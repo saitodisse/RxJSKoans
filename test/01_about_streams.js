@@ -58,7 +58,7 @@ test('simple return', function () {
 test('the last event', function () {
   var received = '';
   var names = ['foo', 'bar'];
-  Observable.from(names).subscribe(function (x) { received = x; });
+  Observable.fromArray(names).subscribe(function (x) { received = x; });
 
   equal(__, received);
 });
@@ -66,7 +66,7 @@ test('the last event', function () {
 test('everything counts', function () {
   var received = 0;
   var numbers = [3, 4];
-  Observable.from(numbers).subscribe(function (x) { received += x; });
+  Observable.fromArray(numbers).subscribe(function (x) { received += x; });
 
   equal(__, received);
 });
@@ -86,24 +86,24 @@ test('all events will be received', function () {
   var received = 'Working ';
   var numbers = Range.create(9, 5);
 
-  Observable.from(numbers).subscribe(function (x) { received += x; });
+  Observable.fromArray(numbers).subscribe(function (x) { received += x; });
 
   equal(__, received);
 });
 
 test('do things in the middle', function () {
   var status = [];
-  var daysTilTest = Observable.from(Range.create(4, 1));
+  var daysTilTest = Observable.fromArray(Range.create(4, 1));
 
-  daysTilTest.tap(function (d) { status.push(d + '=' + (d === 1 ? 'Study Like Mad' : __)); }).subscribe();
+  daysTilTest.do(function (d) { status.push(d + '=' + (d === 1 ? 'Study Like Mad' : __)); }).subscribe();
 
   equal('4=Party,3=Party,2=Party,1=Study Like Mad', status.toString());
 });
 
 test('nothing listens until you subscribe', function () {
   var sum = 0,
-      numbers = Observable.from(Range.create(1, 10)),
-      observable = numbers.tap(function (n) { sum += n; });
+      numbers = Observable.fromArray(Range.create(1, 10)),
+      observable = numbers.do(function (n) { sum += n; });
 
   equal(0, sum);
   observable.__();
@@ -114,7 +114,7 @@ test('nothing listens until you subscribe', function () {
 test('events before you subscribe do not count', function () {
   var sum = 0,
       numbers = new Subject(),
-      observable = numbers.tap(function (n) { sum += n; });
+      observable = numbers.do(function (n) { sum += n; });
 
   numbers.onNext(1);
   numbers.onNext(2);
@@ -130,7 +130,7 @@ test('events before you subscribe do not count', function () {
 test('events after you unsubscribe dont count', function () {
   var sum = 0,
       numbers = new Subject(),
-      observable = numbers.tap(function (n) { sum += n; }),
+      observable = numbers.do(function (n) { sum += n; }),
       subscription = observable.subscribe();
 
   numbers.onNext(1);
@@ -147,7 +147,7 @@ test('events after you unsubscribe dont count', function () {
 test('events while subscribing', function () {
   var received = [],
       words = new Subject(),
-      observable = words.tap(received.push.bind(received));
+      observable = words.do(received.push.bind(received));
 
   words.onNext('Peter');
   words.onNext('said');
