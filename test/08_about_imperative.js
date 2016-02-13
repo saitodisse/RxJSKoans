@@ -16,7 +16,7 @@ test('can make a decision with an if with no else', function () {
     })
     .subscribe(results.push.bind(results));
 
-  equal(__, results.join(''));
+  equal('2,4,6,8,10', results.join(','));
 });
 
 test('can make a decision with an if with an else', function () {
@@ -27,25 +27,31 @@ test('can make a decision with an if with an else', function () {
         function () { return x % 2 === 0; },
         Observable.just(x),
         Observable.range(x, i)
+        // range(1, 0): ------------
+        //     just(2): --2---------
+        // range(3, 2): --3-4-------
+        //     just(4): --4---------
+        // range(5, 4): --5-6-7-8---
       );
     })
     .subscribe(results.push.bind(results));
 
-  equal(__, results.join(''));
+  equal('2,3,4,4,5,6,7,8', results.join(','));
 });
 
 test('we can make test cases', function () {
   var result = '';
 
   var cases = {
-    'matt': Observable.just(1),
-    'erik': Observable.just(2),
-    'bart': Observable.just(3),
-    'wes': Observable.just(4)
+    matt: Observable.just(1),
+    erik: Observable.just(2),
+    bart: Observable.just(3),
+    wes: Observable.just(4)
   };
 
-  Observable.just(__)
+  Observable.just('wes')
     .flatMap(function (x) {
+      // https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/operators/case.md
       return Observable.case(
         function () { return x; },
         cases
@@ -57,8 +63,6 @@ test('we can make test cases', function () {
 });
 
 test('we can also have a default case', function () {
-  var result = '';
-
   var cases = {
     'matt': Observable.just(1),
     'erik': Observable.just(2),
@@ -71,24 +75,30 @@ test('we can also have a default case', function () {
       return Observable.case(
         function () { return x; },
         cases,
-        Observable.just(__)
+        Observable.just(5)
       );
     })
-    .subscribe(function (x) { result = x; });
+    .reduce((prev, curr) => prev + curr, 0)
+    .subscribe((x) => {
+      equal(5, x);
+    });
 
-  equal(5, result);
 });
 
 test('while does something until proven false', function () {
   var i = 0;
   var result = [];
 
-  var source = Rx.Observable
+  Rx.Observable
+    // https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/operators/while.md
     .while(
-      function () { return ++i < 3 },
-      Rx.Observable.just(__)
+      function () {
+        i = i + 1;
+        return i < 3
+      },
+      Rx.Observable.just(42)
     )
     .subscribe(result.push.bind(result));
 
-  equal('4242', result.join(''));
+  equal('42,42', result.join(','));
 });
