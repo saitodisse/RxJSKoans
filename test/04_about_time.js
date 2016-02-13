@@ -25,7 +25,7 @@ asyncTest('launching an event via a scheduler', function () {
 
 asyncTest('launching an event in the future', function () {
   var received = null;
-  var time = 100;
+  var time = 10;
 
   var people = new Subject();
   people.delay(time)
@@ -38,7 +38,7 @@ asyncTest('launching an event in the future', function () {
   setTimeout(function () {
     equal('Godot', received);
     start();
-  }, 200)
+  }, 20)
 });
 
 asyncTest('a watched pot', function () {
@@ -112,7 +112,7 @@ asyncTest('debouncing', function () {
 asyncTest('buffering', function () {
   var received = [];
   var events = new Subject();
-  events.bufferWithTime(100)
+  events.bufferWithTime(50)
     .map(function (c) { return c.join(''); })
     .subscribe(received.push.bind(received));
 
@@ -133,8 +133,8 @@ asyncTest('buffering', function () {
     setTimeout(function () {
       equal('RxJS Rocks', received.join(' '));
       start();
-    }, 120);
-  }, 120);
+    }, 70);
+  }, 70);
 });
 
 asyncTest('time between calls', function () {
@@ -142,8 +142,8 @@ asyncTest('time between calls', function () {
   var events = new Subject();
 
   events.timeInterval()
-    .filter(function (t) { return t.interval > 100; })
-    .do((t) => console.log('time between calls:', t))
+    .filter(function (t) { return t.interval > 50; })
+    // .do((t) => console.log('time between calls:', t))
     .subscribe(function (t) { received.push(t.value); });
 
   events.onNext('too');
@@ -157,13 +157,13 @@ asyncTest('time between calls', function () {
 
       equal('slow down', received.join(' '));
       start();
-    }, 120);
-  }, 120);
+    }, 70);
+  }, 70);
 });
 
 asyncTest('results can be ambiguous timing', function () {
   var results = 0;
-  var fst = Observable.timer(40).map(-1);
+  var fst = Observable.timer(10).map(-1);
   var snd = Observable.timer(100).map(1);
 
   // https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/operators/amb.md
@@ -173,5 +173,5 @@ asyncTest('results can be ambiguous timing', function () {
   setTimeout(function () {
     equal(results, -1);
     start();
-  }, 600);
+  }, 50);
 });

@@ -1,6 +1,6 @@
 var Rx = require('rx'),
-    Observable = Rx.Observable,
-    Subject = Rx.Subject;
+  Observable = Rx.Observable,
+  Subject = Rx.Subject;
 
 QUnit.module('Advanced Streams');
 
@@ -8,10 +8,12 @@ var __ = 'Fill in the blank';
 
 test('merging', function () {
   var easy = [];
-  var you = Observable.of(1,2,3);
-  var me = Observable.of('A','B','C');
-  you.merge(me).subscribe(easy.push.bind(easy));
-  equal(easy.join(' '), __);
+  var you = Observable.of(1, 2, 3);
+  var me = Observable.of('A', 'B', 'C', 'D');
+  you.merge(me)
+    .subscribe(easy.push.bind(easy));
+
+  equal(easy.join(' '), '1 A 2 B 3 C D');
 });
 
 test('merging events', function () {
@@ -31,14 +33,22 @@ test('merging events', function () {
   s2.onNext('is');
   s1.onNext('perfect.');
 
+  // s1    -o--o-----------o-------
+  // s2    -------o--o--o----------
+  // merge -1--1--2--2--2--1-------
+
   equal('I am nobody. Nobody is perfect.', both.join(' '));
-  equal(__, first.join(' '));
+  equal('I am perfect.', first.join(' '));
 });
 
 test('splitting up', function () {
   var oddsAndEvens = [];
   var numbers = Observable.range(1, 9);
-  var split = numbers.groupBy(function (n) { return n % __; });
+
+  // https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/operators/groupby.md
+  var split = numbers
+    .groupBy(function (n) { return n % 2; });
+
   split.subscribe(function (group) {
     group.subscribe(function (n) {
       oddsAndEvens[group.key] || (oddsAndEvens[group.key] = '');
@@ -51,12 +61,12 @@ test('splitting up', function () {
 });
 
 test('need to subscribe immediately when splitting', function () {
-  var averages = [0,0];
-  var numbers = Observable.of(22,22,99,22,101,22);
+  var averages = [0, 0];
+  var numbers = Observable.of(22, 22, 99, 22, 101, 22);
   var split = numbers.groupBy(function (n) { return n % 2; });
 
   split.subscribe(function (g) {
-    g.average().__(function (a) { averages[g.key] = a; });
+    g.average().subscribe(function (a) { averages[g.key] = a; });
   });
 
   equal(22, averages[0]);
@@ -68,14 +78,19 @@ test('multiple subscriptions', function () {
   var sum = 0;
   var average = 0;
 
-  numbers.sum().subscribe(function (n) { sum = n; });
+  numbers.sum()
+    .subscribe(function (n) { sum = n; });
+
   numbers.onNext(1);
   numbers.onNext(1);
   numbers.onNext(1);
   numbers.onNext(1);
   numbers.onNext(1);
 
-  numbers.average().subscribe(function (n) { average = n; });
+
+  numbers.average()
+    .subscribe(function (n) { average = n; });
+
   numbers.onNext(2);
   numbers.onNext(2);
   numbers.onNext(2);
@@ -85,5 +100,5 @@ test('multiple subscriptions', function () {
   numbers.onCompleted();
 
   equal(15, sum);
-  equal(__, average);
+  equal(2, average);
 });
